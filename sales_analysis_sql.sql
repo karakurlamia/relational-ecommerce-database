@@ -1,14 +1,14 @@
----Kategori bazlı gelir
+---Kategori bazlÃ½ gelir
 SELECT p.category , SUM(od.quantity * od.unit_price) AS revenue FROM products p
 JOIN orders_details od ON p.product_id=od.product_id
 JOIN orders o ON o.order_id=od.order_id
 WHERE o.order_status='Completed'
 GROUP BY p.category 
 ORDER BY revenue DESC;
----Gelirin büyük bölümü Caffe kategorisinde yoğunlaşmaktadır;
----bu durum kategori bağımlılığı riskine ve önceliklendirme fırsatlarına işaret etmektedir.
+---Gelirin bÃ¼yÃ¼k bÃ¶lÃ¼mÃ¼ Caffe kategorisinde yoÃ°unlaÃ¾maktadÃ½r;
+---bu durum kategori baÃ°Ã½mlÃ½lÃ½Ã°Ã½ riskine ve Ã¶nceliklendirme fÃ½rsatlarÃ½na iÃ¾aret etmektedir.
 
----Ürün bazlı gelir dagılımı(pareto hazırlık analizi)
+---ÃœrÃ¼n bazlÃ½ gelir dagÃ½lÃ½mÃ½(pareto hazÃ½rlÃ½k analizi)
 WITH product_revenue AS (
 SELECT p.product_id  , p.product_name ,SUM(od.quantity * od.unit_price) AS revenue   FROM products p
 JOIN orders_details od ON p.product_id=od.product_id
@@ -18,36 +18,36 @@ GROUP BY p.product_id , p.product_name
 )
 SELECT * FROM product_revenue
 ORDER BY revenue DESC
----Gelirin önemli bir kısmı Latte,Cappuccino ve  Flat White  ürünlerinde yoğunlaşmaktadır;
----bu durum ürün bazlı gelir konsantrasyonuna ve sınırlı ürünlere bağımlılık riskine işaret etmektedir.
+---Gelirin Ã¶nemli bir kÃ½smÃ½ Latte,Cappuccino ve  Flat White  Ã¼rÃ¼nlerinde yoÃ°unlaÃ¾maktadÃ½r;
+---bu durum Ã¼rÃ¼n bazlÃ½ gelir konsantrasyonuna ve sÃ½nÃ½rlÃ½ Ã¼rÃ¼nlere baÃ°Ã½mlÃ½lÃ½k riskine iÃ¾aret etmektedir.
 
----Sube bazlı gelir dagılımı
+---Sube bazlÃ½ gelir dagÃ½lÃ½mÃ½
 SELECT b.branch_id ,b.branch_name ,b.opening_date, SUM(od.quantity * od.unit_price ) AS revenue FROM branches b 
 JOIN orders o ON o.branch_id=b.branch_id
 JOIN orders_details od ON od.order_id=o.order_id
 WHERE o.order_status='Completed'
 GROUP BY b.branch_id ,b.branch_name , b.opening_date
 ORDER BY revenue DESC
----Daily Grind -Merkez şubesi en yüksek geliri üretmektedir; şube gelirlerinin açılış tarihleriyle doğru orantılı olması,
----operasyonel olgunluk süresinin gelir performansını etkilediğini göstermektedir.
+---Daily Grind -Merkez Ã¾ubesi en yÃ¼ksek geliri Ã¼retmektedir; Ã¾ube gelirlerinin aÃ§Ã½lÃ½Ã¾ tarihleriyle doÃ°ru orantÃ½lÃ½ olmasÃ½,
+---operasyonel olgunluk sÃ¼resinin gelir performansÃ½nÃ½ etkilediÃ°ini gÃ¶stermektedir.
 
----Müsteri bazlı analiz : Siparis hacmi ve gelir katkısı
+---MÃ¼steri bazlÃ½ analiz : Siparis hacmi ve gelir katkÃ½sÃ½
 SELECT c.customer_id,c.customer_name , SUM(od.quantity*od.unit_price) AS revenue , COUNT(DISTINCT o.order_id ) AS ordercount FROM customers c
 JOIN orders o ON c.customer_id=o.customer_id
 JOIN orders_details od ON od.order_id=o.order_id
 WHERE o.order_status='Completed'
 GROUP BY c.customer_id,c.customer_name
 ORDER BY revenue DESC
----Müşteri gelirleri sipariş hacminden ziyade sipariş başına düşen harcama tutarıyla ayrışmaktadır; 
----benzer sipariş sayılarına sahip müşteriler arasında anlamlı gelir farkları gözlemlenmektedir.
+---MÃ¼Ã¾teri gelirleri sipariÃ¾ hacminden ziyade sipariÃ¾ baÃ¾Ã½na dÃ¼Ã¾en harcama tutarÃ½yla ayrÃ½Ã¾maktadÃ½r; 
+---benzer sipariÃ¾ sayÃ½larÃ½na sahip mÃ¼Ã¾teriler arasÃ½nda anlamlÃ½ gelir farklarÃ½ gÃ¶zlemlenmektedir.
 
 ---Toplam ciro
 SELECT SUM(od.quantity*od.unit_price) AS revenue FROM orders_details od 
 JOIN orders o ON o.order_id=od.order_id
 WHERE o.order_status='Completed';
----Analiz edilen dönemde, completed statüsündeki siparişler üzerinden hesaplanan toplam gelir 95.370’dir.
+---Analiz edilen dÃ¶nemde, completed statÃ¼sÃ¼ndeki sipariÃ¾ler Ã¼zerinden hesaplanan toplam gelir 95.370â€™dir.
 
----Düşük siparis -Yüksek gelir
+---DÃ¼Ã¾Ã¼k siparis -YÃ¼ksek gelir
 SELECT c.customer_id ,c.customer_name ,SUM(od.quantity * od.unit_price) AS revenue , COUNT(DISTINCT o.order_id ) AS order_count FROM customers c
 JOIN orders o ON c.customer_id=o.customer_id
 JOIN orders_details od ON od.order_id=o.order_id
@@ -55,8 +55,8 @@ WHERE o.order_status='Completed'
 GROUP BY c.customer_id,c.customer_name
 HAVING COUNT(DISTINCT o.order_id ) <= 3
 ORDER BY revenue DESC
----3 ve daha az sipariş veren müşteriler arasında, en yüksek gelir sağlayan  İD C054 olan müşteri  1.645 gelir üretmiştir.
----Bu durum, düşük sipariş hacmine rağmen yüksek sepet değeri oluşturan müşteri segmentinin varlığına işaret etmektedir.
+---3 ve daha az sipariÃ¾ veren mÃ¼Ã¾teriler arasÃ½nda, en yÃ¼ksek gelir saÃ°layan  ÃD C054 olan mÃ¼Ã¾teri  1.645 gelir Ã¼retmiÃ¾tir.
+---Bu durum, dÃ¼Ã¾Ã¼k sipariÃ¾ hacmine raÃ°men yÃ¼ksek sepet deÃ°eri oluÃ¾turan mÃ¼Ã¾teri segmentinin varlÃ½Ã°Ã½na iÃ¾aret etmektedir.
 
 --- Gelir Younlasma riski(Top Customers)
 SELECT TOP 5 c.customer_id,c.customer_name ,SUM(od.quantity*od.unit_price) AS revenue  FROM customers c
@@ -65,8 +65,8 @@ JOIN orders_details od ON od.order_id=o.order_id
 WHERE o.order_status='Completed'
 GROUP BY c.customer_id,c.customer_name
 ORDER BY revenue DESC;
----Gelirin önemli bir kısmı C051, C067, C015, C092 ve C074 müşteri ID’lerinde yoğunlaşmaktadır. 
----Bu durum, gelir yoğunlaşma riskine işaret etmektedir.
+---Gelirin Ã¶nemli bir kÃ½smÃ½ C051, C067, C015, C092 ve C074 mÃ¼Ã¾teri IDâ€™lerinde yoÃ°unlaÃ¾maktadÃ½r. 
+---Bu durum, gelir yoÃ°unlaÃ¾ma riskine iÃ¾aret etmektedir.
 
 
 --- Pareto Analizi
@@ -87,8 +87,9 @@ cumulative_ciro * 1.00 / total_ciro AS cumulative_ratio
 FROM ranted_ciro
 WHERE cumulative_ciro * 1.00 / total_ciro <= 0.80
 ORDER BY revenue DESC;
----Toplam gelirin yaklaşık %80’i müşteri tabanının %60’ı tarafından üretilmektedir. Bu dağılım,
----gelirin tekil müşterilerde aşırı yoğunlaşmadığını ancak üst müşteri segmentinin gelir açısından kritik olduğunu göstermektedir.
+---Toplam gelirin yaklaÃ¾Ã½k %80â€™i mÃ¼Ã¾teri tabanÃ½nÃ½n %60â€™Ã½ tarafÃ½ndan Ã¼retilmektedir. Bu daÃ°Ã½lÃ½m,
+---gelirin tekil mÃ¼Ã¾terilerde aÃ¾Ã½rÃ½ yoÃ°unlaÃ¾madÃ½Ã°Ã½nÃ½ ancak Ã¼st mÃ¼Ã¾teri segmentinin gelir aÃ§Ã½sÃ½ndan kritik olduÃ°unu gÃ¶stermektedir.
+
 
 
 
